@@ -1,0 +1,74 @@
+# Универсальные маски ZIP по странам (ISO2) + стиль форматирования
+countries:
+  US:
+    patterns: ["^\\d{5}$", "^\\d{9}$"]
+    style: "US"          # 12345 или 12345-6789
+  CA:
+    patterns: ["^[A-Za-z]\\d[A-Za-z]\\s?\\d[A-Za-z]\\d$"]
+    style: "CA"          # A1A 1A1
+  GB:
+    patterns: ["^(GIR\\s?0AA|[A-Z]{1,2}\\d[A-Z\\d]?\\s?\\d[A-Z]{2})$"]
+    style: "GB"          # SW1A 1AA
+  NL:
+    patterns: ["^\\d{4}\\s?[A-Za-z]{2}$"]
+    style: "NL"          # 1234 AB
+  DE:
+    patterns: ["^\\d{5}$"]
+    style: "N5"
+  FR:
+    patterns: ["^\\d{5}$"]
+    style: "N5"
+  ES:
+    patterns: ["^\\d{5}$"]
+    style: "N5"
+  IT:
+    patterns: ["^\\d{5}$"]
+    style: "N5"
+  RU:
+    patterns: ["^\\d{6}$"]
+    style: "N6"
+  IN:
+    patterns: ["^\\d{6}$"]
+    style: "N6"
+  AU:
+    patterns: ["^\\d{4}$"]
+    style: "N4"
+  BR:
+    patterns: ["^\\d{8}$","^\\d{5}-\\d{3}$"]
+    style: "BR"          # 12345-678
+  JP:
+    patterns: ["^\\d{7}$","^\\d{3}-\\d{4}$"]
+    style: "JP"          # 123-4567
+  CN:
+    patterns: ["^\\d{6}$"]
+    style: "N6"
+  MX:
+    patterns: ["^\\d{5}$"]
+    style: "N5"
+  PL:
+    patterns: ["^\\d{5}$","^\\d{2}-\\d{3}$"]
+    style: "PL"          # 12-345
+  PT:
+    patterns: ["^\\d{7}$","^\\d{4}-\\d{3}$"]
+    style: "PT"          # 1234-567
+  BE:
+    patterns: ["^\\d{4}$"]
+    style: "N4"
+  AT:
+    patterns: ["^\\d{4}$"]
+    style: "N4"
+  SE:
+    patterns: ["^\\d{5}$"]
+    style: "N5"
+  NO:
+    patterns: ["^\\d{4}$"]
+    style: "N4"
+  DK:
+    patterns: ["^\\d{4}$"]
+    style: "N4"
+  FI:
+    patterns: ["^\\d{5}$"]
+    style: "N5"
+  IE:
+    patterns: ["^[A-Za-z]\\d{2}[A-Za-z\\d]{4}$","^[A-Za-z]\\d{2}\\s?[A-Za-z\\d]{4}$"]
+    style: "IE"          # A65 F4E2
