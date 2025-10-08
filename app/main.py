@@ -32,7 +32,7 @@ else:
         "Укажите путь через `ADDRNORM_GEO_PROFILE` или положите файл в `configs/geo_profile.yaml`."
     )
 
-# Параметры (режим addr-only | extended)
+# Параметры (режимы и libpostal)
 opts = render_options()
 
 # Загрузка CSV (превью открыто в компоненте)
@@ -46,9 +46,17 @@ if run and df is not None:
     st.subheader("Обработка")
     with st.spinner("Нормализация..."):
         t0 = time.time()
-        out, changes = process_dataframe(df, output_mode=opts["output_mode"])
+        out, changes = process_dataframe(
+            df,
+            output_mode=opts["output_mode"],
+            use_libpostal=opts.get("use_libpostal", False),
+            libpostal_url=opts.get("libpostal_url", "http://localhost:8080"),
+        )
         dt = time.time() - t0
-        logger.info("Processed %s rows in %.2fs (mode=%s)", len(df), dt, opts["output_mode"])
+        logger.info(
+            "Processed %s rows in %.2fs (mode=%s, libpostal=%s)",
+            len(df), dt, opts["output_mode"], opts.get("use_libpostal", False)
+        )
 
     st.success(f"Готово: {len(out)} строк за {dt:.2f} сек")
     st.dataframe(out.head(20))
