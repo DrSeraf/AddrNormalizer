@@ -142,3 +142,25 @@ def get_region_aliases(country_iso2: str | None) -> dict[str, str]:
                 if ks and vs:
                     out[ks] = vs
     return out
+
+def get_street_abbr() -> dict[str, dict[str, list[str]]]:
+    """
+    Возвращает {"latin": {canon: [aliases...]}, "cyrillic": {...}} из configs/street_abbr/default.yaml.
+    Если файл не найден/пуст — вернёт {}.
+    """
+    # пробуем найти рядом с профилем geo (ищем в той же корневой папке configs)
+    base_dir = None
+    p = get_profile_path()
+    if p:
+        base_dir = os.path.dirname(os.path.dirname(p))  # .../configs
+    else:
+        # fallback: от текущего рабочего каталога
+        base_dir = os.path.join(os.getcwd(), "configs")
+
+    path = os.path.join(base_dir, "street_abbr", "default.yaml")
+    if not os.path.isfile(path):
+        return {}
+
+    with open(path, "r", encoding="utf-8") as f:
+        obj = yaml.safe_load(f)
+    return obj if isinstance(obj, dict) else {}

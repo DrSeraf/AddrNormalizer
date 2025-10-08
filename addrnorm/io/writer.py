@@ -5,6 +5,8 @@ from .reader import safe_get
 from ..parse.zipcode import normalize_zip
 from ..parse.country import normalize_country
 from ..parse.region import normalize_region
+from ..parse.locality import normalize_locality
+from ..parse.street import normalize_street   # <-- НОВОЕ
 
 def _combine_street(street_norm: pd.Series, house_number: pd.Series) -> pd.Series:
     combined = []
@@ -23,10 +25,8 @@ def process_dataframe(df: pd.DataFrame, output_mode: str = "addr-only"):
     street_b   = safe_get(df, "street")
     zipc_b     = safe_get(df, "zip")
 
-    # после базовой чистки
+    # базовая чистка для некоторых полей
     district = district_b.map(norm_text)
-    locality = locality_b.map(norm_text)
-    street   = street_b.map(norm_text)
     zipc     = zipc_b.map(norm_text)
 
     # ZIP
@@ -37,31 +37,36 @@ def process_dataframe(df: pd.DataFrame, output_mode: str = "addr-only"):
     # COUNTRY
     country_res = [normalize_country(c, zi) for c, zi in zip(country_b.map(norm_text), zip_inferred_iso2)]
     country     = pd.Series([cr.name for cr in country_res], dtype="string")
-    country_iso = [cr.iso2 for cr in country_res]  # может быть None
+    country_iso = [cr.iso2 for cr in country_res]
 
-    # REGION (разворачиваем США)
-    region_norm_list = []
-    for reg_raw, iso2, cname in zip(region_b, country_iso, country):
-        region_norm_list.append(normalize_region(reg_raw, iso2, cname))
+    # REGION
+    region_norm_list = [normalize_region(r, iso2, cname) for r, iso2, cname in zip(region_b, country_iso, country)]
     region = pd.Series(region_norm_list, dtype="string")
+
+    # LOCALITY
+    locality_norm_list = [normalize_locality(loc, iso2, cname) for loc, iso2, cname in zip(locality_b, country_iso, country)]
+    locality = pd.Series(locality_norm_list, dtype="string")
+
+    # STREET (нормализация с отрезанием apt/suite и разворачиванием аббревиатур)
+    street_norm_list = [normalize_street(s) for s in street_b]
+    street = pd.Series(street_norm_list, dtype="string")
 
     # дом пока не выделяем
     house_number = pd.Series([""] * len(df), dtype="string")
-    street_norm  = street
 
     # addr_norm
     addr_norm = [
         assemble_addr_norm(
             country[i], region[i], district[i], locality[i],
-            street_norm[i], house_number[i], zip_norm[i]
+            street[i], house_number[i], zip_norm[i]
         )
         for i in range(len(df))
     ]
     addr_norm = pd.Series(addr_norm, dtype="string")
 
-    # логи (секции в порядке: street, locality, district, region, country, zip)
+    # логи
     changes = {
-        "street":   (street_b,   street_norm),
+        "street":   (street_b,   street),
         "locality": (locality_b, locality),
         "district": (district_b, district),
         "region":   (region_b,   region),
@@ -76,7 +81,7 @@ def process_dataframe(df: pd.DataFrame, output_mode: str = "addr-only"):
         return out, changes
 
     # extended
-    street_combined = _combine_street(street_norm, house_number)
+    street_combined = _combine_street(street, house_number)
     out = pd.DataFrame({
         "street":        street_combined,
         "locality_norm": locality,
