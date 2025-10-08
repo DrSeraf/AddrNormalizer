@@ -3,12 +3,10 @@ from ..clean.text_normalize import norm_text
 from ..synth.assemble import assemble_addr_norm
 from .reader import safe_get
 from ..parse.zipcode import normalize_zip
+from ..parse.country import normalize_country
 
 def _combine_street(street_norm: pd.Series, house_number: pd.Series) -> pd.Series:
-    """
-    Склеивает 'улица + дом' в один столбец.
-    Если один из компонентов пуст — возвращает другой.
-    """
+    """Склеивает 'улица + дом' в один столбец (если один пуст — возвращает другой)."""
     combined = []
     for s, h in zip(street_norm.fillna(""), house_number.fillna("")):
         s = str(s).strip()
@@ -21,10 +19,10 @@ def _combine_street(street_norm: pd.Series, house_number: pd.Series) -> pd.Serie
 
 def process_dataframe(df: pd.DataFrame, output_mode: str = "addr-only"):
     """
-    addr-only  -> вернуть исходные колонки + добавить addr_norm
-    extended   -> вернуть нормализованные: street(улица+дом), locality_norm, district_norm, region_norm, zip_norm, addr_norm
+    addr-only  -> вернуть исходные колонки + country_norm + addr_norm
+    extended   -> вернуть нормализованные: street, locality_norm, district_norm, region_norm, zip_norm, country_norm, addr_norm
     """
-    # before (для логов изменений)
+    # before (для логов)
     country_b  = safe_get(df, "country")
     region_b   = safe_get(df, "region")
     district_b = safe_get(df, "district")
@@ -32,22 +30,25 @@ def process_dataframe(df: pd.DataFrame, output_mode: str = "addr-only"):
     street_b   = safe_get(df, "street")
     zipc_b     = safe_get(df, "zip")
 
-    # after (v0 — базовая нормализация текста)
-    country  = country_b.map(norm_text)
+    # after (базовая нормализация текста)
     region   = region_b.map(norm_text)
     district = district_b.map(norm_text)
     locality = locality_b.map(norm_text)
     street   = street_b.map(norm_text)
     zipc     = zipc_b.map(norm_text)
 
-    # ZIP: универсальная нормализация/валидация
-    zip_norm_list = []
-    for c, z in zip(country.tolist(), zipc.tolist()):
-        zr = normalize_zip(c if c else None, z)
-        zip_norm_list.append(zr.zip_norm)
-    zip_norm = pd.Series(zip_norm_list, dtype="string")
+    # ZIP normalize (и подсказка страны)
+    zip_results = [normalize_zip(None if not c else c, z) for c, z in zip(country_b.map(norm_text), zipc)]
+    zip_norm = pd.Series([zr.zip_norm for zr in zip_results], dtype="string")
+    zip_inferred_iso2 = [zr.country_inferred for zr in zip_results]
 
-    # Дом пока не выделяем — просто пусто (логика готова на будущее)
+    # COUNTRY normalize (используем подсказку ZIP при пустом/непонятном поле)
+    country_res = [normalize_country(c, zi) for c, zi in zip(country_b.map(norm_text), zip_inferred_iso2)]
+    country     = pd.Series([cr.name for cr in country_res], dtype="string")
+    # iso2 мы пока не выводим, но держим на будущее
+    # country_iso = [cr.iso2 for cr in country_res]
+
+    # Дом пока не выделяем
     house_number = pd.Series([""] * len(df), dtype="string")
     street_norm  = street
 
@@ -63,19 +64,21 @@ def process_dataframe(df: pd.DataFrame, output_mode: str = "addr-only"):
 
     # трасса изменений для логов
     changes = {
-        "zip":      (zipc_b,     zip_norm),
-        "region":   (region_b,   region),
-        "district": (district_b, district),
-        "locality": (locality_b, locality),
         "street":   (street_b,   street_norm),
+        "locality": (locality_b, locality),
+        "district": (district_b, district),
+        "region":   (region_b,   region),
+        "country":  (country_b,  country),
+        "zip":      (zipc_b,     zip_norm),
     }
 
     if output_mode == "addr-only":
-        out = df.copy()
+        out = df.copy()  # исходные колонки пользователя
+        out["country_norm"] = country
         out["addr_norm"] = addr_norm
         return out, changes
 
-    # extended: один столбец street (улица + дом), нужный порядок, без house_number
+    # extended: нужный порядок + country_norm
     street_combined = _combine_street(street_norm, house_number)
     out = pd.DataFrame({
         "street":        street_combined,
@@ -83,6 +86,7 @@ def process_dataframe(df: pd.DataFrame, output_mode: str = "addr-only"):
         "district_norm": district,
         "region_norm":   region,
         "zip_norm":      zip_norm,
+        "country_norm":  country,
         "addr_norm":     addr_norm,
     })
     return out, changes

@@ -1,49 +1,42 @@
 from __future__ import annotations
-import os, math, time
+import os, time
 import pandas as pd
 
-# keys -> красивое название
-TITLE = {
-    "changed": "ИЗМЕНЕНО",
-    "cleared": "ОЧИЩЕНО",
-}
+ORDER = ["street", "locality", "district", "region", "country", "zip"]
 
 def _iter_examples(before: pd.Series, after: pd.Series, colname: str):
-    # генерирует (категория, строка)
+    """Генерирует строки 'до → после' по колонке."""
     for i in range(len(before)):
-        b = str(before.iloc[i]) if pd.notna(before.iloc[i]) else ""
-        a = str(after.iloc[i]) if pd.notna(after.iloc[i]) else ""
+        b = "" if pd.isna(before.iloc[i]) else str(before.iloc[i])
+        a = "" if pd.isna(after.iloc[i])  else str(after.iloc[i])
         if b == a:
             continue
         if b and not a:
-            yield ("cleared", f"[{colname}] строка {i+1}: \"{b}\" → \"\" (cleared)")
+            yield f"[{colname}] строка {i+1}: \"{b}\" → \"\" (cleared)"
         else:
-            yield ("changed", f"[{colname}] строка {i+1}: \"{b}\" → \"{a}\"")
+            yield f"[{colname}] строка {i+1}: \"{b}\" → \"{a}\""
 
-def build_examples(changes: dict[str, tuple[pd.Series, pd.Series]], total: int = 20) -> list[str]:
-    buckets = {"changed": [], "cleared": []}
-    # Собираем сырые примеры по всем колонкам
-    for col, (before, after) in changes.items():
-        for cat, line in _iter_examples(before, after, col):
-            buckets[cat].append(line)
-
-    # Равномерная выборка по категориям
-    kinds = [k for k in ["changed","cleared"] if buckets[k]]
-    if not kinds:
-        return ["Нет изменений для показа."]
-    per = max(1, total // len(kinds))
-    out = []
-    for k in kinds:
-        out.append(f"===== {TITLE[k]} =====")
-        out.extend(buckets[k][:per])
-    # Если осталось место — добираем из любых категорий
-    remain = total - sum(per for _ in kinds)
-    if remain > 0:
-        pool = []
-        for k in kinds:
-            pool.extend(buckets[k][per:])
-        out.extend(pool[:remain])
-    return out
+def build_columnwise_report(changes: dict[str, tuple[pd.Series, pd.Series]], per_col_limit: int | None = None) -> list[str]:
+    """
+    Возвращает длинный список строк с секциями по колонкам в ORDER.
+    Если колонки нет в changes — выводит секцию и 'нет изменений'.
+    per_col_limit=None -> показывать все изменения колонки.
+    """
+    lines: list[str] = []
+    for col in ORDER:
+        lines.append(f"========== {col} ==========")
+        if col not in changes:
+            lines.append("нет изменений.")
+            continue
+        before, after = changes[col]
+        bucket = list(_iter_examples(before, after, col))
+        if not bucket:
+            lines.append("нет изменений.")
+            continue
+        if per_col_limit is not None and per_col_limit > 0:
+            bucket = bucket[:per_col_limit]
+        lines.extend(bucket)
+    return lines
 
 def save_examples_txt(lines: list[str], logs_dir: str = "logs") -> str:
     os.makedirs(logs_dir, exist_ok=True)

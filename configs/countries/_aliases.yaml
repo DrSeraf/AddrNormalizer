@@ -1,7 +1,112 @@
 aliases:
-  usa: "United States"
-  us: "United States"
-  ru: "Russia"
-  russian federation: "Russia"
-  es: "Spain"
-  de: "Germany"
+  # United States
+  "usa": "United States"
+  "u.s.a": "United States"
+  "us": "United States"
+  "u.s.": "United States"
+  "united states of america": "United States"
+  "states": "United States"
+  "america": "United States"
+
+  # Russia
+  "ru": "Russia"
+  "russian federation": "Russia"
+  "россия": "Russia"
+  "рф": "Russia"
+
+  # Germany
+  "de": "Germany"
+  "deutschland": "Germany"
+  "фрг": "Germany"
+
+  # Spain
+  "es": "Spain"
+  "españa": "Spain"
+  "spain ": "Spain"  # с возможным хвостом пробела
+
+  # Netherlands
+  "nl": "Netherlands"
+  "holland": "Netherlands"
+  "the netherlands": "Netherlands"
+  "нидерланды": "Netherlands"
+  "голландия": "Netherlands"
+
+  # United Kingdom
+  "uk": "United Kingdom"
+  "u.k.": "United Kingdom"
+  "great britain": "United Kingdom"
+  "britain": "United Kingdom"
+  "gb": "United Kingdom"
+
+  # Canada
+  "ca": "Canada"
+
+  # France
+  "fr": "France"
+  "france ": "France"
+
+  # Italy
+  "it": "Italy"
+  "italia": "Italy"
+
+  # China
+  "cn": "China"
+  "prc": "China"
+  "people's republic of china": "China"
+  "китай": "China"
+
+  # Japan
+  "jp": "Japan"
+  "nippon": "Japan"
+  "nihon": "Japan"
+
+  # India
+  "in": "India"
+  "bharat": "India"
+
+  # Australia
+  "au": "Australia"
+
+  # Brazil
+  "br": "Brazil"
+  "brasil": "Brazil"
+
+  # Mexico
+  "mx": "Mexico"
+  "méxico": "Mexico"
+
+  # Poland
+  "pl": "Poland"
+  "polska": "Poland"
+
+  # Portugal
+  "pt": "Portugal"
+  "português": "Portugal"
+
+  # Belgium
+  "be": "Belgium"
+  "belgique": "Belgium"
+  "belgië": "Belgium"
+  "belgien": "Belgium"
+
+  # Austria
+  "at": "Austria"
+  "österreich": "Austria"
+
+  # Nordics
+  "se": "Sweden"
+  "svenska": "Sweden"
+  "no": "Norway"
+  "norge": "Norway"
+  "dk": "Denmark"
+  "danmark": "Denmark"
+  "fi": "Finland"
+  "suomi": "Finland"
+
+  # Ireland & Switzerland
+  "ie": "Ireland"
+  "eire": "Ireland"
+  "ch": "Switzerland"
+  "schweiz": "Switzerland"
+  "suisse": "Switzerland"
+  "svizzera": "Switzerland"

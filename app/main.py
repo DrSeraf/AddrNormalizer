@@ -5,24 +5,27 @@ if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 # ------------------------------------
 
+import time
 import streamlit as st
-import pandas as pd
+
 from addrnorm.logging_cfg.setup import setup_logging
 from addrnorm.io.writer import process_dataframe, write_csv
 from app.components.options_panel import render_options
 from app.components.file_uploader import upload_csv
-from addrnorm.qa.reports import build_examples, save_examples_txt
-import time
+from addrnorm.qa.reports import build_columnwise_report, save_examples_txt
 
 st.set_page_config(page_title="AddrNormalizer", layout="wide")
 
 logger = setup_logging(logs_dir="logs", level="INFO")
-st.title("AddrNormalizer — нормализация адресов (v0)")
+st.title("AddrNormalizer — нормализация адресов")
 
+# Параметры (режим addr-only | extended и т.д.)
 opts = render_options()
+
+# Загрузка CSV с автопревью (expander открыт в компоненте)
 df = upload_csv()
 
-# Кнопка запуска
+# Кнопка запуска обработки
 run = st.button("🚀 Запустить обработку", type="primary", disabled=df is None)
 
 if run and df is not None:
@@ -37,23 +40,21 @@ if run and df is not None:
     st.success(f"Готово: {len(out)} строк за {dt:.2f} сек")
     st.dataframe(out.head(20))
 
-    # Сохранение результата
+    # Сохранение результата и кнопка скачивания
     os.makedirs("data/output", exist_ok=True)
-    out_name = f"data/output/addrnorm_{int(time.time())}.csv"
-    write_csv(out, out_name)
+    out_path = f"data/output/addrnorm_{int(time.time())}.csv"
+    write_csv(out, out_path)
+    with open(out_path, "rb") as f:
+        st.download_button("Скачать результат CSV", f, file_name=os.path.basename(out_path), mime="text/csv")
 
-    # Формируем и показываем примеры изменений
-    st.subheader("Логи примеров (20 шт.)")
-    example_lines = build_examples(changes, total=20)
-    example_txt_path = save_examples_txt(example_lines, logs_dir="logs")
+    # Помодульные логи изменений по колонкам (street → locality → district → region → country → zip)
+    st.subheader("Логи изменений по колонкам")
+    lines = build_columnwise_report(changes, per_col_limit=None)  # без лимита — покажем всё
+    examples_path = save_examples_txt(lines, logs_dir="logs")
 
-    st.code("\n".join(example_lines), language="text")
-    st.caption(f"Лог-файл (примеры): {example_txt_path}")
+    st.code("\n".join(lines), language="text")
+    st.caption(f"Лог-примеры: {examples_path}")
     st.caption(f"Полный лог: {logger.log_path}")
 
-    # Кнопка скачивания результирующего CSV
-    with open(out_name, "rb") as f:
-        st.download_button("Скачать результат CSV", f, file_name=os.path.basename(out_name), mime="text/csv")
-else:
-    if df is None:
-        st.info("Загрузите файл для старта.")
+elif df is None:
+    st.info("Загрузите файл для старта.")
