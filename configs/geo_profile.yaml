@@ -1,0 +1,247 @@
+countries:
+  index:
+    US: "United States"
+    CA: "Canada"
+    GB: "United Kingdom"
+    NL: "Netherlands"
+    DE: "Germany"
+    FR: "France"
+    ES: "Spain"
+    IT: "Italy"
+    RU: "Russia"
+    CN: "China"
+    JP: "Japan"
+    IN: "India"
+    AU: "Australia"
+    BR: "Brazil"
+    MX: "Mexico"
+    PL: "Poland"
+    PT: "Portugal"
+    BE: "Belgium"
+    AT: "Austria"
+    SE: "Sweden"
+    NO: "Norway"
+    DK: "Denmark"
+    FI: "Finland"
+    IE: "Ireland"
+    CH: "Switzerland"
+
+  aliases:
+    # United States
+    "usa": "United States"
+    "u.s.a": "United States"
+    "us": "United States"
+    "u.s.": "United States"
+    "united states of america": "United States"
+    "states": "United States"
+    "america": "United States"
+    # Russia
+    "ru": "Russia"
+    "russian federation": "Russia"
+    "россия": "Russia"
+    "рф": "Russia"
+    # Germany
+    "de": "Germany"
+    "deutschland": "Germany"
+    "фрг": "Germany"
+    # Spain
+    "es": "Spain"
+    "españa": "Spain"
+    # Netherlands
+    "nl": "Netherlands"
+    "holland": "Netherlands"
+    "the netherlands": "Netherlands"
+    "нидерланды": "Netherlands"
+    "голландия": "Netherlands"
+    # United Kingdom
+    "uk": "United Kingdom"
+    "u.k.": "United Kingdom"
+    "great britain": "United Kingdom"
+    "britain": "United Kingdom"
+    "gb": "United Kingdom"
+    # France
+    "fr": "France"
+    # Italy
+    "it": "Italy"
+    "italia": "Italy"
+    # China
+    "cn": "China"
+    "prc": "China"
+    "people's republic of china": "China"
+    "китай": "China"
+    # Japan
+    "jp": "Japan"
+    "nippon": "Japan"
+    "nihon": "Japan"
+    # India
+    "in": "India"
+    "bharat": "India"
+    # Australia
+    "au": "Australia"
+    # Canada
+    "ca": "Canada"
+    # Brazil
+    "br": "Brazil"
+    "brasil": "Brazil"
+    # Mexico
+    "mx": "Mexico"
+    "méxico": "Mexico"
+    # Poland
+    "pl": "Poland"
+    "polska": "Poland"
+    # Portugal
+    "pt": "Portugal"
+    # Belgium
+    "be": "Belgium"
+    "belgique": "Belgium"
+    "belgië": "Belgium"
+    "belgien": "Belgium"
+    # Austria
+    "at": "Austria"
+    "österreich": "Austria"
+    # Nordics
+    "se": "Sweden"
+    "svenska": "Sweden"
+    "no": "Norway"
+    "norge": "Norway"
+    "dk": "Denmark"
+    "danmark": "Denmark"
+    "fi": "Finland"
+    "suomi": "Finland"
+    # Ireland & Switzerland
+    "ie": "Ireland"
+    "eire": "Ireland"
+    "ch": "Switzerland"
+    "schweiz": "Switzerland"
+    "suisse": "Switzerland"
+    "svizzera": "Switzerland"
+
+zip_patterns:
+  US:
+    patterns: ["^\\d{5}$", "^\\d{9}$"]
+    style: "US"
+  CA:
+    patterns: ["^[A-Za-z]\\d[A-Za-z]\\s?\\d[A-Za-z]\\d$"]
+    style: "CA"
+  GB:
+    patterns: ["^(GIR\\s?0AA|[A-Z]{1,2}\\d[A-Z\\d]?\\s?\\d[A-Z]{2})$"]
+    style: "GB"
+  NL:
+    patterns: ["^\\d{4}\\s?[A-Za-z]{2}$"]
+    style: "NL"
+  DE:
+    patterns: ["^\\d{5}$"]
+    style: "N5"
+  FR:
+    patterns: ["^\\d{5}$"]
+    style: "N5"
+  ES:
+    patterns: ["^\\d{5}$"]
+    style: "N5"
+  IT:
+    patterns: ["^\\d{5}$"]
+    style: "N5"
+  RU:
+    patterns: ["^\\d{6}$"]
+    style: "N6"
+  IN:
+    patterns: ["^\\d{6}$"]
+    style: "N6"
+  AU:
+    patterns: ["^\\d{4}$"]
+    style: "N4"
+  BR:
+    patterns: ["^\\d{8}$","^\\d{5}-\\d{3}$"]
+    style: "BR"
+  JP:
+    patterns: ["^\\d{7}$","^\\d{3}-\\d{4}$"]
+    style: "JP"
+  MX:
+    patterns: ["^\\d{5}$"]
+    style: "N5"
+  PL:
+    patterns: ["^\\d{5}$","^\\d{2}-\\d{3}$"]
+    style: "PL"
+  PT:
+    patterns: ["^\\d{7}$","^\\d{4}-\\d{3}$"]
+    style: "PT"
+  BE:
+    patterns: ["^\\d{4}$"]
+    style: "N4"
+  AT:
+    patterns: ["^\\d{4}$"]
+    style: "N4"
+  SE:
+    patterns: ["^\\d{5}$"]
+    style: "N5"
+  NO:
+    patterns: ["^\\d{4}$"]
+    style: "N4"
+  DK:
+    patterns: ["^\\d{4}$"]
+    style: "N4"
+  FI:
+    patterns: ["^\\d{5}$"]
+    style: "N5"
+  IE:
+    patterns: ["^[A-Za-z]\\d{2}[A-Za-z\\d]{4}$","^[A-Za-z]\\d{2}\\s?[A-Za-z\\d]{4}$"]
+    style: "IE"
+
+regions:
+  US:
+    aliases:
+      al: "Alabama"
+      ak: "Alaska"
+      az: "Arizona"
+      ar: "Arkansas"
+      ca: "California"
+      calif: "California"
+      co: "Colorado"
+      ct: "Connecticut"
+      de: "Delaware"
+      dc: "District of Columbia"
+      dccolumbia: "District of Columbia"
+      fl: "Florida"
+      ga: "Georgia"
+      hi: "Hawaii"
+      ia: "Iowa"
+      id: "Idaho"
+      il: "Illinois"
+      in: "Indiana"
+      ks: "Kansas"
+      ky: "Kentucky"
+      la: "Louisiana"
+      ma: "Massachusetts"
+      mass: "Massachusetts"
+      md: "Maryland"
+      me: "Maine"
+      mi: "Michigan"
+      mn: "Minnesota"
+      mo: "Missouri"
+      ms: "Mississippi"
+      mt: "Montana"
+      nc: "North Carolina"
+      nd: "North Dakota"
+      ne: "Nebraska"
+      nh: "New Hampshire"
+      nj: "New Jersey"
+      nm: "New Mexico"
+      nv: "Nevada"
+      ny: "New York"
+      nys: "New York"
+      oh: "Ohio"
+      ok: "Oklahoma"
+      or: "Oregon"
+      pa: "Pennsylvania"
+      ri: "Rhode Island"
+      sc: "South Carolina"
+      sd: "South Dakota"
+      tn: "Tennessee"
+      tx: "Texas"
+      ut: "Utah"
+      va: "Virginia"
+      vt: "Vermont"
+      wa: "Washington"
+      wi: "Wisconsin"
+      wv: "West Virginia"
+      wy: "Wyoming"
