@@ -20,7 +20,7 @@ st.set_page_config(page_title="AddrNormalizer", layout="wide")
 logger = setup_logging(logs_dir="logs", level="INFO")
 st.title("AddrNormalizer — нормализация адресов")
 
-# Информация о профиле нормализации (geo_profile.yaml)
+# Информация о профиле нормализации (configs/geo_profile.yaml)
 prof_path = get_profile_path()
 if profile_loaded():
     st.caption(f"Профиль загружен: `{prof_path}`")
@@ -32,10 +32,10 @@ else:
         "Укажите путь через `ADDRNORM_GEO_PROFILE` или положите файл в `configs/geo_profile.yaml`."
     )
 
-# Параметры (режим addr-only | extended и пр.)
+# Параметры (режим addr-only | extended)
 opts = render_options()
 
-# Загрузка CSV с автопревью (expander открыт в компоненте)
+# Загрузка CSV (превью открыто в компоненте)
 df = upload_csv()
 
 # Кнопка запуска обработки
@@ -60,12 +60,14 @@ if run and df is not None:
     with open(out_path, "rb") as f:
         st.download_button("Скачать результат CSV", f, file_name=os.path.basename(out_path), mime="text/csv")
 
-    # Помодульные логи изменений по колонкам (street → locality → district → region → country → zip)
+    # Помодульные логи изменений (≤20 примеров на колонку, равномерно по датасету)
     st.subheader("Логи изменений по колонкам")
-    lines = build_columnwise_report(changes, per_col_limit=None)  # без лимита — покажем всё
+    lines = build_columnwise_report(changes, per_col_limit=20)
     examples_path = save_examples_txt(lines, logs_dir="logs")
 
-    st.code("\n".join(lines), language="text")
+    # Используем text_area вместо code — устойчивее к длинным plain-text логам
+    st.text_area("Примеры «до → после»", value="\n".join(lines), height=300)
+
     st.caption(f"Лог-примеры: {examples_path}")
     st.caption(f"Полный лог: {logger.log_path}")
 

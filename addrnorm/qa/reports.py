@@ -4,15 +4,26 @@ import pandas as pd
 from typing import Tuple, List
 
 ORDER = ["street", "locality", "district", "region", "country", "zip"]
+MAX_VALUE_LEN = 200  # обрезаем каждое значение в логе до 200 символов
+
+def _trim(s: str) -> str:
+    if not s:
+        return ""
+    s = s.replace("\r", " ").replace("\n", " ")  # без переносов
+    if len(s) <= MAX_VALUE_LEN:
+        return s
+    return s[:MAX_VALUE_LEN] + "…"
 
 def _iter_changes(before: pd.Series, after: pd.Series, colname: str) -> List[str]:
     out: List[str] = []
     n = len(before)
     for i in range(n):
-        b = "" if pd.isna(before.iloc[i]) else str(before.iloc[i])
-        a = "" if pd.isna(after.iloc[i])  else str(after.iloc[i])
-        if b == a:
+        b_raw = "" if pd.isna(before.iloc[i]) else str(before.iloc[i])
+        a_raw = "" if pd.isna(after.iloc[i])  else str(after.iloc[i])
+        if b_raw == a_raw:
             continue
+        b = _trim(b_raw)
+        a = _trim(a_raw)
         if b and not a:
             out.append(f"[{colname}] строка {i+1}: \"{b}\" → \"\" (cleared)")
         else:
@@ -20,22 +31,21 @@ def _iter_changes(before: pd.Series, after: pd.Series, colname: str) -> List[str
     return out
 
 def _even_sample(items: List[str], limit: int) -> List[str]:
-    """Равномерная выборка по массиву без зависимости от numpy."""
+    """Равномерная выборка по массиву без numpy; защищена от дублей."""
     if limit is None or limit <= 0 or len(items) <= limit:
         return items
     if len(items) == 0:
         return items
-    # строим равномерные индексы
+    if limit == 1:
+        return [items[0]]
     step = (len(items) - 1) / (limit - 1)
     idxs = [round(i * step) for i in range(limit)]
-    # защита от дублирующихся индексов на маленьких выборках
     seen = set()
     result = []
     for i in idxs:
         if i not in seen:
             seen.add(i)
             result.append(items[i])
-    # если после дедупликации не хватает — добираем из начала
     j = 0
     while len(result) < limit and j < len(items):
         if j not in seen:
@@ -45,9 +55,9 @@ def _even_sample(items: List[str], limit: int) -> List[str]:
 
 def build_columnwise_report(changes: dict[str, Tuple[pd.Series, pd.Series]], per_col_limit: int = 20) -> list[str]:
     """
-    Возвращает длинный список секций по колонкам (ORDER).
-    В каждой секции: до per_col_limit примеров, равномерно по датасету.
-    Если нет изменений — явно пишем 'нет изменений.'
+    Длинный список секций по колонкам в порядке ORDER.
+    В каждой секции: ≤ per_col_limit равномерно распределённых примеров.
+    Если нет изменений — строка 'нет изменений.'.
     """
     lines: list[str] = []
     for col in ORDER:
