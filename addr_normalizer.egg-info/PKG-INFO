@@ -1,0 +1,11 @@
+Metadata-Version: 2.4
+Name: addr-normalizer
+Version: 0.0.1
+Summary: Address normalization toolkit
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+Requires-Dist: streamlit>=1.37
+Requires-Dist: pandas>=2.2
+Requires-Dist: pyyaml>=6.0
+Requires-Dist: rapidfuzz>=3.9
+Requires-Dist: python-slugify>=8.0
