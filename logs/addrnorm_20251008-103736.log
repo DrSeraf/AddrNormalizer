@@ -1,0 +1,2 @@
+2025-10-08 10:37:36,413 | INFO | Logger initialized → logs\addrnorm_20251008-103736.log
+2025-10-08 10:37:39,608 | INFO | Processed 100000 rows in 2.95s (mode=extended)
