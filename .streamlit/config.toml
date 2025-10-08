@@ -1,0 +1,13 @@
+[theme]
+primaryColor="#7c3aed"
+base="light"
+
+[client]
+showErrorDetails = "full"
+
+[server]
+headless = true
+enableXsrfProtection = false
+
+[ui]
+wideMode = true

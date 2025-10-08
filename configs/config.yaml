@@ -1,0 +1,10 @@
+language_default: auto
+profile: auto
+output_mode: addr-only  # addr-only | extended
+fuzzy:
+  region_threshold: 0.90
+  locality_threshold: 0.85
+templates:
+  default_order: [street, house, locality, region, district, zip, country]
+libpostal:
+  enabled: false
