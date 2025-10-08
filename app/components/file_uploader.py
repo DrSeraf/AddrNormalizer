@@ -9,6 +9,7 @@ def upload_csv():
     content = f.getvalue().decode("utf-8", errors="replace")
     df = pd.read_csv(StringIO(content), dtype="string", keep_default_na=False, na_values=[])
     st.caption(f"Строк: {len(df)}, Колонок: {len(df.columns)}")
-    with st.expander("Первые строки"):
+    # ↓ раскрыт сразу
+    with st.expander("Первые строки", expanded=True):
         st.dataframe(df.head(20))
     return df

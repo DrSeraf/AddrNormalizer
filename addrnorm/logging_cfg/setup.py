@@ -21,5 +21,6 @@ def setup_logging(logs_dir: str = "logs", level: str = "INFO") -> logging.Logger
     sh.setFormatter(fmt)
     logger.addHandler(sh)
 
+    logger.log_path = log_path  # <- добавили
     logger.info("Logger initialized → %s", log_path)
     return logger
