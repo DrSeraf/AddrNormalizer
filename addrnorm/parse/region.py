@@ -1,7 +1,7 @@
 from __future__ import annotations
 import re
 from typing import Optional
-from ..rules.registry import get_region_aliases
+from ..rules.registry import get_region_aliases, get_country_index
 
 def _norm_text(s: Optional[str]) -> str:
     if s is None:
@@ -12,16 +12,32 @@ def _norm_text(s: Optional[str]) -> str:
 
 def _key(s: str) -> str:
     s = s.lower().strip()
-    return "".join(ch for ch in s if ch.isalnum())  # убираем пробелы/точки/дефисы/подчёркивания
+    # убираем пробелы/точки/дефисы/подчёркивания и прочее не-алфанум
+    return "".join(ch for ch in s if ch.isalnum())
+
+def _iso2_from_country_name(name: str | None) -> str | None:
+    if not name:
+        return None
+    idx = get_country_index()  # ISO2 -> Canonical
+    name_l = name.strip().lower()
+    for iso2, canon in idx.items():
+        if name_l == canon.lower():
+            return iso2
+    return None
 
 def normalize_region(region_raw: Optional[str], country_iso2: Optional[str], country_name: Optional[str]) -> str:
+    """
+    Если страна США — разворачиваем алиасы штатов в полные имена.
+    Иначе — возвращаем аккуратно очищенное значение.
+    """
     region_raw = _norm_text(region_raw)
     if not region_raw:
         return ""
 
-    iso = (country_iso2 or "").upper()
-    if not iso and country_name and country_name.strip().lower() == "united states":
-        iso = "US"
+    iso = (country_iso2 or "").strip().upper()
+    if not iso:
+        # восстановим iso2 из названия страны, если оно каноническое
+        iso = (_iso2_from_country_name(country_name) or "").upper()
 
     if iso == "US":
         aliases = get_region_aliases("US")
@@ -30,5 +46,5 @@ def normalize_region(region_raw: Optional[str], country_iso2: Optional[str], cou
             return val
         return region_raw
 
-    # Остальные страны пока без расширенной нормализации
+    # остальные страны — только чистка
     return region_raw

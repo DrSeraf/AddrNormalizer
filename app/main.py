@@ -1,9 +1,9 @@
-# --- make project root importable ---
+# --- сделать корень проекта импортируемым ---
 import sys, os
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
-# ------------------------------------
+# --------------------------------------------
 
 import time
 import streamlit as st
@@ -13,13 +13,26 @@ from addrnorm.io.writer import process_dataframe, write_csv
 from app.components.options_panel import render_options
 from app.components.file_uploader import upload_csv
 from addrnorm.qa.reports import build_columnwise_report, save_examples_txt
+from addrnorm.rules.registry import get_profile_path, profile_loaded
 
 st.set_page_config(page_title="AddrNormalizer", layout="wide")
 
 logger = setup_logging(logs_dir="logs", level="INFO")
 st.title("AddrNormalizer — нормализация адресов")
 
-# Параметры (режим addr-only | extended и т.д.)
+# Информация о профиле нормализации (geo_profile.yaml)
+prof_path = get_profile_path()
+if profile_loaded():
+    st.caption(f"Профиль загружен: `{prof_path}`")
+else:
+    st.warning(
+        "Не найден `configs/geo_profile.yaml`. Нормализация страны/штата/ZIP будет пустой.\n\n"
+        "Где ищем: переменная окружения `ADDRNORM_GEO_PROFILE`, затем `./configs/geo_profile.yaml`, "
+        "а также по дереву каталогов вверх от текущей директории и от расположения пакета. "
+        "Укажите путь через `ADDRNORM_GEO_PROFILE` или положите файл в `configs/geo_profile.yaml`."
+    )
+
+# Параметры (режим addr-only | extended и пр.)
 opts = render_options()
 
 # Загрузка CSV с автопревью (expander открыт в компоненте)
